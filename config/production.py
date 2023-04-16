@@ -4,7 +4,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DEBUG = False
 
-ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
+ALLOWED_HOSTS = [env('ALLOWED_HOSTS'), ]
 
 DATABASES = {
     'default': {
@@ -30,7 +30,7 @@ LOGGING = {
         'file': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': '/var/log/dsite/app.log',
+            'filename': '/var/log/mysite/app.log',
             'formatter': 'production',
         },
     },
