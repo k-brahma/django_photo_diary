@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load static %}
 {% load humanize %}
 {% block title %}ホーム{% endblock %}
 {% block extra_css %}
@@ -12,6 +13,9 @@
     </nav>
 {% endblock %}
 {% block main_content %}
+    <div class="home-img">
+        <img src="{% static 'img/logo_250.png' %}" alt="logo_250.png">
+    </div>
     <div class="home">
         <div class="links">
             {% if request.user.is_authenticated %}
