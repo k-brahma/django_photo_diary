@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+
+{% block title %}
+    新規タグ作成 - {{ block.super }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'log:article_list' %}">記事一覧</a></li>
+            <li class="breadcrumb-item active" aria-current="page">タグ作成</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block header_h1 %}
+    新規タグ作成
+{% endblock %}
+
+{% block main_content %}
+    <form method="post">
+        {% csrf_token %}
+        {% bootstrap_form form %}
+        {% bootstrap_button button_type="submit" content="作成する" %}
+    </form>
+{% endblock %}

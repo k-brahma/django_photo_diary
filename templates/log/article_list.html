@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}
+    日記リスト - {{ block.super }}
+{% endblock %}
+
+{% block header_h1 %}
+    日記リスト
+{% endblock %}
+
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item active" aria-current="page">記事一覧</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block main_content %}
+    <div class="my-3">
+        <a href="{% url 'log:article_create' %}" class="btn btn-success">新規作成</a>
+    </div>
+    <div class="row row-cols-1 row-cols-md-2 g-4">
+        {% for article in articles %}
+            <div class="col">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ article.title }}</h5>
+                        {% if article.thumbnail %}
+                            <img src="{{ article.thumbnail.url }}" class="img-fluid">
+                        {% endif %}
+                        <p class="card-text">{{ article.body|truncatechars:50 }}</p>
+                        <a href="{% url 'log:article_detail' article.pk %}" class="btn btn-primary">詳細を見る</a>
+                    </div>
+                    <div class="card-footer">
+                        <small class="text-muted">作成日: {{ article.created_at|date:"Y年m月d日" }}</small>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <p>まだ日記がありません。</p>
+        {% endfor %}
+    </div>
+
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+            {% for page in paginator_range %}
+                {% if page_obj.number == page %}
+                    <li>{{ page }}</li>
+                {% elif page == paginator.ELLIPSIS %}
+                    <li>{{ page }}</li>
+                {% else %}
+                    <li>
+                        <a href="?page={{ page }}&tag={{ tag }}">{{ page }}</a>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </nav>
+{% endblock %}

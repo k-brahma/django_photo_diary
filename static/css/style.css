@@ -1,0 +1,10 @@
+html {
+  margin: 50px auto;
+}
+@media screen and (min-width: 1024px) {
+  html {
+    width: 1024px;
+  }
+}
+
+/*# sourceMappingURL=style.css.map */

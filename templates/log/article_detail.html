@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ article.title }} - {{ block.super }}
+{% endblock %}
+
+{% block header_h1 %}
+    {{ article.title }}
+{% endblock %}
+
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'log:article_list' %}">記事一覧</a></li>
+            <li class="breadcrumb-item active" aria-current="page">記事</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block main_content %}
+    <div class="card">
+        <div class="card-header">
+            <small class="text-muted">作成日: {{ article.created_at|date:"Y年m月d日" }}</small>
+            <small class="text-muted">更新日: {{ article.updated_at|date:"Y年m月d日" }}</small>
+        </div>
+        {% if article.photo %}
+            <img src="{{ article.photo.url }}" class="card-img-top" alt="{{ article.title }}">
+        {% endif %}
+        <div class="card-body">
+            <p class="card-text">{{ article.body }}</p>
+        </div>
+        <ul class="list-group list-group-flush">
+            {% for tag in article.tags.all %}
+                <li class="list-group-item">{{ tag.name }}</li>
+            {% endfor %}
+        </ul>
+    </div>
+
+    <h2 class="mt-5">コメント</h2>
+    <hr>
+
+    <form method="POST" action="{% url 'add_comment' article.pk %}">
+        {% csrf_token %}
+        <div class="mb-3">
+            <label for="comment-body" class="form-label">コメントを追加する</label>
+            <textarea class="form-control" id="comment-body" name="body" rows="3" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary">コメントを追加する</button>
+    </form>
+
+    <div class="mt-5">
+        {% if article.comments.all %}
+            {% for comment in article.comments.all %}
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ comment.user.username }}</h5>
+                        <p class="card-text">{{ comment.body }}</p>
+                        <small class="text-muted">作成日: {{ comment.created_at|date:"Y年m月d日" }}</small>
+                    </div>
+                </div>
+            {% empty %}
+                <p>コメントはありません。</p>
+            {% endfor %}
+        {% else %}
+            <p>コメントはありません。</p>
+        {% endif %}
+    </div>
+{% endblock %}

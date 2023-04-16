@@ -1,0 +1,34 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}ログアウト{% endblock %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item active" aria-current="page">ログアウト</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block main_content %}
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 fw-normal">ログアウト</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% if redirect_field_value %}
+                        <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}"/>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary btn-block">ログアウトする</button>
+                </form>
+            </div>
+            <div class="card-fotter text-muted text-center">
+                <a href="{% url 'home' %}">ホームに戻る</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

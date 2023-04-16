@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load humanize %}
+{% block title %}ホーム{% endblock %}
+{% block extra_css %}
+{% endblock %}
+{% block header_h1 %}ホーム{% endblock %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item active" aria-current="page">ホーム</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block main_content %}
+    <div class="home">
+        <div class="links">
+            {% if request.user.is_authenticated %}
+                <div class="content-list">
+                    <a href="{% url 'account_logout' %}">ログアウト</a>&nbsp;
+                    <a href="{% url 'account_change_password' %}">パスワード変更</a>
+                </div>
+            {% else %}
+                <div class="content-list">
+                    <a href="{% url 'account_login' %}">ログイン</a>&nbsp;
+                    <a href="{% url 'account_reset_password' %}">パスワード変更</a>
+                </div>
+            {% endif %}
+        </div>
+        <div class="links">
+            <div class="content-list"><a href="{% url 'log:article_list' %}">日記一覧</a></div>
+        </div>
+        <div class="links">
+            <div class="content-list"><a href="{% url 'log:tag_list' %}">タグ一覧</a></div>
+        </div>
+    </div>
+{% endblock %}

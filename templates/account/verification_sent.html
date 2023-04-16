@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+
+{% block title %}メールアドレスを確認してください{% endblock %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item active" aria-current="page">メールアドレス確認</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block main_content %}
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 fw-normal">メールアドレスを確認してください</h4>
+            </div>
+            <div class="card-body">
+                <p>メールアドレス確認メールを送信しました。</p>
+                <p>メールに記載されているリンクをクリックしてください。</p>
+            </div>
+            <div class="card-fotter text-muted text-center">
+                <a href="{% url 'account_login' %}">ログイン画面に戻る</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+

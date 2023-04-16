@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+
+{% block title %}ログイン{% endblock %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item active" aria-current="page">ログイン</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block main_content %}
+    <div class="col-lg-8 col-md-10 col-sm-12">
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header">
+                <h4 class="my-0 fw-normal">ログイン</h4>
+            </div>
+            <div class="card-body">
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    {% bootstrap_form form %}
+                    <button type="submit" class="btn btn-primary btn-block">ログインする</button><br>
+                    <a href="{% url 'account_reset_password' %}">{% trans "Forgot Password?" %}</a>
+                </form>
+            </div>
+            <div class="card-fotter text-muted text-center">
+                <a href="{% url 'home' %}">ホームに戻る</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+

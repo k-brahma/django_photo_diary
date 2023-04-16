@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+    記事削除 - {{ block.super }}
+{% endblock %}
+
+{% block header_h1 %}
+    記事削除
+{% endblock %}
+
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'log:article_list' %}">記事一覧</a></li>
+            <li class="breadcrumb-item" aria-current="page"><a href="{% url 'log:article_detail' pk=article.pk %}">記事</a></li>
+            <li class="breadcrumb-item active" aria-current="page">記事削除</li>
+        </ol>
+    </nav>
+{% endblock %}
+{% block main_content %}
+    <form method="post">
+        {% csrf_token %}
+        <p>以下の記事を削除してもよろしいですか？</p>
+        <h4>{{ article.title }}</h4>
+        <p>{{ article.body }}</p>
+        <button type="submit" class="btn btn-danger">はい</button>
+        <a href="{% url 'article_detail' article.pk %}" class="btn btn-secondary">いいえ</a>
+    </form>
+{% endblock %}

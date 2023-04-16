@@ -1,0 +1,20 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+
+# macOS + PyCharm
+.DS_Store
+.idea/
+
+#vscode
+.vscode/
+
+# Environments
+.env
+venv/
+
+#db
+*.sqlite3
+
+#media files
+media/

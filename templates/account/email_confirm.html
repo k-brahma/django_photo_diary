@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load django_bootstrap5 %}
+{% load i18n %}
+{% load account %}
+
+{% block title %}メールアドレスの確認{% endblock %}
+{% block breadcrumb %}
+    <nav aria-label="breadcrumb">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{% url 'home' %}">ホーム</a></li>
+            <li class="breadcrumb-item active" aria-current="page">メールアドレス確認</li>
+        </ol>
+    </nav>
+{% endblock %}
+
+{% block main_content %}
+    <div class="col-lg-8 col-md-10 col-sm-12">
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header">
+            <h4 class="my-0 fw-normal">メールアドレスを確認してください</h4>
+        </div>
+        <div class="card-body">
+            {% if confirmation %}
+
+                {% user_display confirmation.email_address.user as user_display %}
+                <p>
+                    以下のメールアドレスが {{ user_display }}さんのものであることを確認してください。<br>
+                    {% blocktrans with confirmation.email_address.email as email %}
+                    <a href="mailto:{{ email }}">{{ email }}</a>
+                    {% endblocktrans %}
+                </p>
+                <form method="post" action="{% url 'account_confirm_email' confirmation.key %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-primary btn-block">確認する</button>
+                </form>
+            {% else %}
+                {% url 'account_email' as email_url %}
+                <p>{% blocktrans %}This e-mail confirmation link expired or is invalid. Please <a href="{{ email_url }}">issue a new e-mail confirmation request</a>.{% endblocktrans %}</p>
+            {% endif %}
+        </div>
+        <div class="card-fotter text-muted text-center">
+            <a href="{% url 'account_login' %}">ログイン画面に戻る</a>
+        </div>
+    </div>
+{% endblock %}
