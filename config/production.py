@@ -6,6 +6,9 @@ DEBUG = False
 
 ALLOWED_HOSTS = [env('ALLOWED_HOSTS'), ]
 
+STATIC_ROOT = '/var/www/mysite/static'
+MEDIA_ROOT = '/var/www/mysite/media'
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',

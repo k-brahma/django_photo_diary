@@ -6,6 +6,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+STATIC_ROOT = '/static_root'
+MEDIA_ROOT = '/media_root'
+
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
