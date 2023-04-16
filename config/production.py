@@ -4,7 +4,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [env('ALLOWED_HOSTS')]
 
 DATABASES = {
     'default': {
