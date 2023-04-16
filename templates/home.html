@@ -13,9 +13,6 @@
     </nav>
 {% endblock %}
 {% block main_content %}
-    <div class="home-img">
-        <img src="{% static 'img/logo_250.png' %}" alt="logo_250.png">
-    </div>
     <div class="home">
         <div class="links">
             {% if request.user.is_authenticated %}
@@ -36,5 +33,8 @@
         <div class="links">
             <div class="content-list"><a href="{% url 'log:tag_list' %}">タグ一覧</a></div>
         </div>
+    </div>
+    <div class="home-img">
+        <img src="{% static 'img/logo_250.png' %}" alt="logo_250.png">
     </div>
 {% endblock %}
