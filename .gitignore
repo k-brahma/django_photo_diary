@@ -16,5 +16,7 @@ venv/
 #db
 *.sqlite3
 
+config/settings.py
+
 #media files
 media/
