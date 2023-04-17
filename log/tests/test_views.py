@@ -185,7 +185,7 @@ class TestArticleCreateView(TestCase):
     @classmethod
     def setUpTestData(cls):
         # テストでアップロードされた画像が保存されるディレクトリを変更
-        Article.photo.field.storage.location = 'media_root_test'
+        Article.photo.field.storage.location = 'media_test_dir'
 
         cls.path = reverse('log:article_create')
         cls.user = User.objects.create_user(username='test', email='foo@bar.com', password='test')
@@ -263,9 +263,9 @@ class TestArticleCreateView(TestCase):
     @classmethod
     def tearDownClass(cls):
         """
-        media_root_test 以下のファイルをディレクトリごと削除
+        media_test_dir 以下のファイルをディレクトリごと削除
         """
-        shutil.rmtree('media_root_test')
+        shutil.rmtree('media_test_dir')
         super().tearDownClass()
 
 
@@ -280,7 +280,7 @@ class TestArticleUpdateView(TestCase):
     @classmethod
     def setUpTestData(cls):
         # テストでアップロードされた画像が保存されるディレクトリを変更
-        Article.photo.field.storage.location = 'media_root_test'
+        Article.photo.field.storage.location = 'media_test_dir'
 
         cls.user = User.objects.create_user(username='test', email='foo@bar.com', password='test')
 
@@ -373,9 +373,9 @@ class TestArticleUpdateView(TestCase):
     @classmethod
     def tearDownClass(cls):
         """
-        media_root_test 以下のファイルをディレクトリごと削除
+        media_test_dir 以下のファイルをディレクトリごと削除
         """
-        shutil.rmtree('media_root_test')
+        shutil.rmtree('media_test_dir')
         super().tearDownClass()
 
 
