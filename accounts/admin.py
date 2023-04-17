@@ -1,12 +1,12 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
 
 from accounts.models import CustomUser
 
 
 @admin.register(CustomUser)
-class CustomUserAdmin(admin.ModelAdmin):
-    list_display = ('id', 'email', 'username', 'is_active', 'is_staff', 'is_superuser', 'last_login')
-    list_display_links = ('id', 'email', 'username')
-    list_filter = ('is_active', 'is_staff', 'is_superuser', 'last_login')
-    search_fields = ('email', 'username')
-    ordering = ('-id',)
+class CustomUserAdmin(UserAdmin):
+    """
+    CustomUser の admin 画面の設定
+    """
+    list_display = ('email', 'username', 'is_staff', 'is_active', 'is_superuser', 'last_login', 'date_joined')
