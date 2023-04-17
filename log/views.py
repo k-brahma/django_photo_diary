@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, resolve_url
 from django.urls import reverse
 from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView
 
-from log.forms import ArticleForm
+from log.forms import ArticleForm, CommentForm
 from log.models import Article, Tag
 
 
@@ -40,6 +40,25 @@ class ArticleDetailView(DetailView):
         return Article.objects.select_related('user').prefetch_related('tags', 'comments', 'comments__user', ).order_by(
             '-created_at')
 
+    def post(self, request, *args, **kwargs):
+        """
+        コメント投稿
+        """
+        if not self.request.user.is_authenticated:
+            messages.error(self.request, 'コメントするにはログインしてください。')
+            return redirect('account_login')
+
+        article = self.get_object()
+        form = CommentForm(request.POST)
+        if form.is_valid():
+            form.instance.article = article
+            form.instance.user = self.request.user
+            form.save()
+            messages.success(self.request, 'コメントを投稿しました。')
+        else:
+            messages.error(self.request, 'コメントを入力してください。')
+        return redirect(self.request.path)
+
 
 class ArticleCreateView(CreateView):
     model = Article
@@ -47,49 +66,70 @@ class ArticleCreateView(CreateView):
     form_class = ArticleForm
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_staff:
-            messages.error(request, '権限がありません。')
+        if not request.user.is_authenticated:
+            messages.error(request, '日記を投稿するにはログインしてください。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
         form.instance.user = self.request.user
-        messages.success(self.request, '記事を作成しました。')
+        messages.success(self.request, '日記を投稿しました。')
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, '日記を投稿できませんでした。')
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return reverse('log:article_list')
 
 
-class ArticleUpdateView(ArticleCreateView):
+class ArticleUpdateView(UpdateView):
     template_name = 'log/article_update.html'
+    model = Article
+    form_class = ArticleForm
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_staff:
-            messages.error(request, '権限がありません。')
+        self.object = self.get_object()
+        if not request.user == self.object.user:
+            messages.error(request, '日記を更新できるのは投稿者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        messages.success(self.request, '記事を更新しました。')
+        messages.success(self.request, '日記を更新しました。')
         return super().form_valid(form)
+
+    def form_invalid(self, form):
+        messages.error(self.request, '日記を編集できませんでした。')
+        return super().form_invalid(form)
 
     def get_success_url(self):
         return reverse('log:article_list')
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['article'] = self.object
+        return context
 
-class ArticleDeleteView(ArticleCreateView):
+
+class ArticleDeleteView(DeleteView):
+    model = Article
     template_name = 'log/article_delete.html'
 
     def dispatch(self, request, *args, **kwargs):
-        if not request.user.is_staff:
-            messages.error(request, '権限がありません。')
+        self.object = self.get_object()
+        if not request.user == self.object.user:
+            messages.error(request, '日記を削除できるのは投稿者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
     def form_valid(self, form):
-        messages.success(self.request, '記事を削除しました。')
+        messages.success(self.request, '日記を削除しました。')
         return super().form_valid(form)
+
+    def get_success_url(self):
+        return reverse('log:article_list')
 
 
 class TagListView(ListView):
@@ -105,7 +145,7 @@ class TagCreateView(CreateView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
-            messages.error(request, '権限がありません。')
+            messages.error(request, 'タグを作成できるのは管理者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
@@ -124,7 +164,7 @@ class TagUpdateView(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
-            messages.error(request, '権限がありません。')
+            messages.error(request, 'タグを更新できるのは管理者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
@@ -142,7 +182,7 @@ class TagDeleteView(DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         if not request.user.is_staff:
-            messages.error(request, '権限がありません。')
+            messages.error(request, 'タグを削除できるのは管理者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 

@@ -34,19 +34,27 @@
                 <li class="list-group-item">{{ tag.name }}</li>
             {% endfor %}
         </ul>
+        {% if request.user == article.user %}
+            <div class="article-control-area">
+                <a href="{% url 'log:article_update' article.pk %}" class="btn btn-primary">編集</a>
+                <a href="{% url 'log:article_delete' article.pk %}" class="btn btn-danger">削除</a>
+            </div>
+        {% endif %}
     </div>
 
     <h2 class="mt-5">コメント</h2>
     <hr>
 
-    <form method="POST" action="{% url 'add_comment' article.pk %}">
-        {% csrf_token %}
-        <div class="mb-3">
-            <label for="comment-body" class="form-label">コメントを追加する</label>
-            <textarea class="form-control" id="comment-body" name="body" rows="3" required></textarea>
-        </div>
-        <button type="submit" class="btn btn-primary">コメントを追加する</button>
-    </form>
+    {% if request.user.is_authenticated %}
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="comment-body" class="form-label">コメントを追加する</label>
+                <textarea class="form-control" id="comment-body" name="body" rows="3" required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">コメントを追加する</button>
+        </form>
+    {% endif %}
 
     <div class="mt-5">
         {% if article.comments.all %}

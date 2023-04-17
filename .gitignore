@@ -19,4 +19,5 @@ venv/
 config/settings.py
 
 #media files
-media/
+media_root/
+media_root_test/
