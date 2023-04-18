@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'accounts.apps.AccountsConfig',
     'log.apps.LogConfig',
-    'django_cleanup',
+    'django_cleanup',  # これは末尾に追加
 ]
 
 MIDDLEWARE = [
