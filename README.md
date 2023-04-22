@@ -2,22 +2,33 @@
 
 写真日記アプリのデモです。
 
-写真日記を投稿できます。  
-投稿にタグをつけられます。タグで絞りこんだ一覧表示も可能です。  
-投稿に対してコメントを追加できます。
+- 写真日記を投稿できます。
+- 投稿にタグをつけられます。タグで絞りこんだ一覧表示も可能です。
+- 投稿に対してコメントを追加できます。
+
+***
 
 ## インストール
 
-config/local.py または config/prod.py をコピーして、 config/settings.py を作成します。
+### 1. settings.py を作る
+
+config/local.py または config/production.py をコピーして、 config/settings.py を作成します。    
+ローカル環境では local.py, 本番環境では production.py を使ってください。
+
+### 2. .env ファイルを作る
+
 .env_sample をコピーして、 .env を作成します。
 
-SECRET_KEY を生成して .env に記載します。
+### 3. .env ファイルに SECRET_KEY を書き込む
 
+SECRET_KEY を生成して .env に記載します。  
 SECRET_KEY は、以下のコマンドで生成できます。
 
 ```bash
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
+
+### 4. Django の設定に問題がないことを確認する
 
 `python manage.py check` でエラーがでていないことを確認します。
 
@@ -25,11 +36,15 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 $ python manage.py check
 ```
 
+### 5. データベースの設定をする
+
 `python manage.py migrate` でデータベースを作成します。
 
 ```bash
 $ python manage.py migrate
 ```
+
+### 6. 管理者ユーザを作成する
 
 `python manage.py createsuperuser` で管理者ユーザーを作成します。
 
@@ -37,11 +52,15 @@ $ python manage.py migrate
 $ python manage.py createsuperuser
 ```
 
-本番環境での利用時は、 `python manage.py collectstatic` で静的ファイルを配置します。
+### 7. 静的ファイルを配信する(本番環境のみ)
+
+本番環境での利用時は、 `python manage.py collectstatic` で静的ファイルを配信します。
 
 ```bash
 $ python manage.py collectstatic
 ```
+
+### 8. サーバを起動する
 
 ローカル環境での動作確認には、 `python manage.py runserver` でサーバーを起動します。
 
@@ -49,7 +68,10 @@ $ python manage.py collectstatic
 $ python manage.py runserver
 ```
 
-管理者としてログインしたら、以下のページに移動してください。
+### 9. site の値を変更する
+
+管理者としてログインしたら、以下のページに移動してください。  
+(以下のページでの設定値は、このデモアプリが利用している django-allauth というのパッケージが利用しています)
 
 /admin/sites/site/1/change/
 
@@ -60,14 +82,19 @@ $ python manage.py runserver
 
 ## 見どころ
 
-### config
+### 本番環境での利用を想定した記述
+
+本番環境での利用を想定した記述が随所に見られます。  
+参考にしてください。
+
+#### config/settings.py
 
 ローカル環境用の settings.py のサンプルとして local.py を用意しています。  
 本番環境用の settings.py のサンプルとして production.py を用意しています。
 
 これらに共通する部分については、 base.py にまとめています。
 
-それぞれの環境では、 settings.py を local.py または production.py をコピーして配置します。
+それぞれの環境では、local.py または production.py をコピーして settings.py を配置します。
 
 config/local.py
 
@@ -98,7 +125,9 @@ if DEBUG:
     INTERNAL_IPS = ["127.0.0.1", ]  # debug toolbar
 ```
 
-.gitignore では、 config.settings.py は git での管理対象外としています。
+#### .gitignore
+
+.gitignore では、 config/settings.py は git での管理対象外としています。
 
 ```gitignore
 config/settings.py
@@ -106,7 +135,7 @@ config/settings.py
 
 ***
 
-### ライブラリの読み込み
+#### ライブラリの読み込み
 
 ローカル環境用のライブラリ読み込みリストとして、 requirements/dev.txt を用意しています。  
 本番環境用のライブラリ読み込みリストとして、 requirements/prod.txt を用意しています。
@@ -123,7 +152,9 @@ django-debug-toolbar==4.0.0
 
 ***
 
-### ユーザ:
+### アプリの見どころ
+
+#### django-allauth を使った実装
 
 accounts アプリに、 AbstractUser を継承した CustomUser モデルを定義しています。
 
@@ -182,7 +213,7 @@ SITE_ID = 1
 
 ***
 
-### ログアプリ
+#### django-imagekit を使った実装
 
 Article モデルが日記のモデルです。  
 Tag モデルが日記に付けるタグのモデルです。  
@@ -206,6 +237,8 @@ class Article(models.Model):
     thumbnail = ImageSpecField(source='photo', processors=[ResizeToFill(100, 100)], format='JPEG',
                                options={'quality': 60}, )
 ```
+
+#### django-cleanup を使った実装
 
 photo フィールドが更新されるとき、通常では、 photo フィールドにアップロードされた画像をそのままサーバの残ってしまいます。  
 これでは photo フィールドを更新する都度、不要な画像が残ってしまいます。
