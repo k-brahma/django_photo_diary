@@ -253,3 +253,75 @@ INSTALLED_APPS = [
     'django_cleanup',
 ]
 ```
+
+#### django-bootstrap5 を使った実装
+
+django-bootstrap5 を利用しています。
+
+Tempalte で、 bootstrap5 という、 css/js ライブラリを利用しています。  
+bootstrap5 は、少量のコードで見栄えの良いサイトを作るのに便利です。
+
+```python
+INSTALLED_APPS = [
+    # ...
+    'django_bootstrap5',
+    # ...
+]
+```
+
+Template に、以下のコードを追加しています。
+
+```html
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+```
+
+実際には、 bootstrap5 は、 base.html に追加しています。
+
+```html
+<!doctype html>
+{% load static %}
+{% load django_bootstrap5 %}
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- script src="https://kit.fontawesome.com/e795095651.js" crossorigin="anonymous"></script -->
+    <script src="{% static 'fontawesome-free-6.4.0-web/js/all.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    {% block extra_css %}{% endblock %}
+    <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+<main class="container">
+    {% block breadcrumb %}{% endblock %}
+    {% bootstrap_messages %}
+    <h1 class="h1_header">{% block header_h1 %}{% endblock %}</h1>
+    <div class="justify-content-center">
+        {% block main_content %}{% endblock %}
+    </div>
+</main>
+{% block extra_footer_js %}{% endblock %}
+</body>
+</html>
+```
+
+base.html で読み込まれているタグ 3 つのうち以下の 2 つは、 css/js の読み込みリンクを生成するためのものです。  
+なので、サイト全体で有効です。
+
+```html
+{% bootstrap_css %}
+{% bootstrap_javascript %}
+```
+
+ただし、 base.html を extend している Template でも、 django-bootstrap5 を都度読み込む必要があります。
+
+```html
+{% extends "base.html" %}
+{% load django_bootstrap5 %}
+```
