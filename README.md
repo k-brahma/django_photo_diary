@@ -115,7 +115,9 @@ config/local.py
 ```python
 from .base import *
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# 通常の console だと日本語メールのタイトルが文字化けしてしまうので回避
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'config.email_backends.ReadableSubjectEmailBackend'
 
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -129,7 +131,7 @@ ALLOWED_HOSTS = []
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db' / 'db.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
 

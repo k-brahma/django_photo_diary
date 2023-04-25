@@ -1,12 +1,10 @@
 from .base import *
 
-# 通常
-# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# console での出力時に日本語の件名を読めるようにする
+# 通常の console だと日本語メールのタイトルが文字化けしてしまうので回避
 # ref: https://speakerdeck.com/thinkami/djangocongress-jp-2019-talk?slide=44
 #      https://speakerdeck.com/thinkami/djangocongress-jp-2019-talk?slide=45
 #      https://speakerdeck.com/thinkami/djangocongress-jp-2019-talk?slide=46
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 EMAIL_BACKEND = 'config.email_backends.ReadableSubjectEmailBackend'
 
 MEDIA_ROOT = BASE_DIR / 'media'
