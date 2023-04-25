@@ -10,16 +10,30 @@
 
 ## インストール
 
-### 1. settings.py を作る
+### 1. requrements に記載されているパッケージをインストールする
+
+ローカル環境の場合は以下
+
+```bash
+$ pip install -r requirements/dev.txt
+```
+
+本番環境の場合は以下
+
+```bash
+$ pip install -r requirements/prod.txt
+```
+
+### 2. settings.py を作る
 
 config/local.py または config/production.py をコピーして、 config/settings.py を作成します。    
 ローカル環境では local.py, 本番環境では production.py を使ってください。
 
-### 2. .env ファイルを作る
+### 3. .env ファイルを作る
 
 .env_sample をコピーして、 .env を作成します。
 
-### 3. .env ファイルに SECRET_KEY を書き込む
+### 4. .env ファイルに SECRET_KEY を書き込む
 
 SECRET_KEY を生成して .env に記載します。  
 SECRET_KEY は、以下のコマンドで生成できます。
@@ -28,7 +42,7 @@ SECRET_KEY は、以下のコマンドで生成できます。
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 
-### 4. Django の設定に問題がないことを確認する
+### 5. Django の設定に問題がないことを確認する
 
 `python manage.py check` でエラーがでていないことを確認します。
 
@@ -36,7 +50,7 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 $ python manage.py check
 ```
 
-### 5. データベースの設定をする
+### 6. データベースの設定をする
 
 `python manage.py migrate` でデータベースを作成します。
 
@@ -44,7 +58,7 @@ $ python manage.py check
 $ python manage.py migrate
 ```
 
-### 6. 管理者ユーザを作成する
+### 7. 管理者ユーザを作成する
 
 `python manage.py createsuperuser` で管理者ユーザーを作成します。
 
@@ -52,7 +66,7 @@ $ python manage.py migrate
 $ python manage.py createsuperuser
 ```
 
-### 7. 静的ファイルを配信する(本番環境のみ)
+### 8. 静的ファイルを配信する(本番環境のみ)
 
 本番環境での利用時は、 `python manage.py collectstatic` で静的ファイルを配信します。
 
@@ -60,7 +74,7 @@ $ python manage.py createsuperuser
 $ python manage.py collectstatic
 ```
 
-### 8. サーバを起動する
+### 9. サーバを起動する(ローカル環境のみ)
 
 ローカル環境での動作確認には、 `python manage.py runserver` でサーバーを起動します。
 
@@ -68,7 +82,7 @@ $ python manage.py collectstatic
 $ python manage.py runserver
 ```
 
-### 9. site の値を変更する
+### 10. site の値を変更する
 
 管理者としてログインしたら、以下のページに移動してください。  
 (以下のページでの設定値は、このデモアプリが利用している django-allauth というのパッケージが利用しています)
