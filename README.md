@@ -151,6 +151,8 @@ config/settings.py
 
 ***
 
+### アプリの見どころ
+
 #### ライブラリの読み込み
 
 ローカル環境用のライブラリ読み込みリストとして、 requirements/dev.txt を用意しています。  
@@ -167,8 +169,6 @@ django-debug-toolbar==4.0.0
 ```
 
 ***
-
-### アプリの見どころ
 
 #### django-allauth を使った実装
 
