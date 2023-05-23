@@ -387,11 +387,19 @@ class TestArticleDeleteView(TestCase):
     投稿については、正常系、異常系についてテスト
     """
 
-    def setUp(self):
+    @classmethod
+    def setUpTestData(cls):
         # テストでアップロードされた画像が保存されるディレクトリを変更
+        Article.photo.field.storage.location = 'media_test_dir'
+
+    def setUp(self):
         self.user = User.objects.create_user(username='test', email='foo@bar.com', password='test')
 
-        self.article = Article.objects.create(title='base_test_title', body='base_test_body', user=self.user)
+        path = Path(__file__).resolve().parent / 'test_img.png'
+        with open(path, 'rb') as f:
+            photo = SimpleUploadedFile('test_img.png', f.read(), content_type='image/png')
+        self.article = Article.objects.create(title='base_test_title', body='base_test_body', user=self.user,
+                                              photo=photo)
         self.path = resolve_url('log:article_delete', pk=self.article.pk)
 
     def test_not_login(self):
@@ -429,6 +437,14 @@ class TestArticleDeleteView(TestCase):
 
         articles = Article.objects.all()
         self.assertEqual(len(articles), 0)
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        media_test_dir 以下のファイルをディレクトリごと削除
+        """
+        shutil.rmtree('media_test_dir')
+        super().tearDownClass()
 
 
 class TestTagCreateView(TestCase):

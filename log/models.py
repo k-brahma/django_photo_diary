@@ -41,4 +41,4 @@ class Comment(models.Model):
     updated_at = models.DateTimeField(default=timezone.now, verbose_name='更新日時', )
 
     def __str__(self):
-        return f'Comment to {self.article.title} by {self.body[:20]}'
+        return f'Comment to {self.article.title} : {self.body[:20]}'
