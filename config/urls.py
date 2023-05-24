@@ -19,6 +19,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import path, include
 from django.views.generic import TemplateView
+import sys
 
 urlpatterns = [
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
@@ -26,7 +27,9 @@ urlpatterns = [
     path('accounts/', include('allauth.urls')),
     path('log/', include('log.urls')),
 ]
-if settings.DEBUG:
+
+# Add debug toolbar if DEBUG is True and not executed by manage.py test command
+if settings.DEBUG and 'test' not in sys.argv:
     urlpatterns += path('__debug__/', include('debug_toolbar.urls')),
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
