@@ -10,11 +10,11 @@ class TagAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('title', 'created_at', 'updated_at')
+    list_display = ('user', 'title', 'created_at', 'updated_at',)
     search_fields = ('title', 'content')
 
 
 @admin.register(Comment)
 class CommentAdmin(admin.ModelAdmin):
-    list_display = ('body', 'created_at', 'updated_at')
+    list_display = ('user', 'body', 'created_at', 'updated_at',)
     search_fields = ('body',)
