@@ -1,2 +1,5 @@
 [run]
 omit = */manage.py
+       */migrations/*
+       tests/*
+       *test_*.py

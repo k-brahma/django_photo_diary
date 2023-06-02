@@ -193,7 +193,7 @@ class TestArticleCreateView(TestCase):
         cls.tag1 = Tag.objects.create(name='test_tag1', slug='test_tag1')
         cls.tag2 = Tag.objects.create(name='test_tag2', slug='test_tag2')
 
-    def test_not_login(self):
+    def test_get_anonymous(self):
         response = self.client.get(self.path, follow=True)
         self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
 
@@ -201,7 +201,7 @@ class TestArticleCreateView(TestCase):
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), '日記を投稿するにはログインしてください。')
 
-    def test_login(self):
+    def test_get_authed_user(self):
         self.client.force_login(self.user)
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, 200)
@@ -273,8 +273,7 @@ class TestArticleUpdateView(TestCase):
     """
     ArticleUpdateView のテスト
 
-    ログイン状態によってリダイレクトされることがある
-    投稿については、正常系、異常系についてテスト
+    ページの表示/投稿の更新ができるのが投稿者本人または is_staff ユーザのみということを確認する
     """
 
     @classmethod
@@ -297,15 +296,15 @@ class TestArticleUpdateView(TestCase):
         self.article.tags.add(self.tag1)
         self.path = resolve_url('log:article_update', pk=self.article.pk)
 
-    def test_not_login(self):
+    def test_get_anonymous(self):
         response = self.client.get(self.path, follow=True)
         self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '日記を更新できるのは投稿者だけです。')
+        self.assertEqual(str(messages[0]), '日記を更新できるのは投稿者と管理者だけです。')
 
-    def test_another_user(self):
+    def test_get_another_user(self):
         another_user = User.objects.create_user(username='another', email='foo2@bar.com')
         self.client.force_login(another_user)
         response = self.client.get(self.path, follow=True)
@@ -313,10 +312,18 @@ class TestArticleUpdateView(TestCase):
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '日記を更新できるのは投稿者だけです。')
+        self.assertEqual(str(messages[0]), '日記を更新できるのは投稿者と管理者だけです。')
 
-    def test_login(self):
+    def test_get_article_user(self):
         self.client.force_login(self.user)
+        response = self.client.get(self.path)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'log/article_update.html')
+
+    def test_get_is_staff(self):
+        another_user = User.objects.create_user(is_staff=True, username='another', email='foo2@bar.com',
+                                                password='testpassword')
+        self.client.force_login(another_user)
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log/article_update.html')
@@ -383,8 +390,7 @@ class TestArticleDeleteView(TestCase):
     """
     ArticleDeleteView のテスト
 
-    ログイン状態によってリダイレクトされることがある
-    投稿については、正常系、異常系についてテスト
+    ページの表示/投稿の削除ができるのが投稿者本人または is_staff ユーザのみということを確認する
     """
 
     @classmethod
@@ -402,15 +408,15 @@ class TestArticleDeleteView(TestCase):
                                               photo=photo)
         self.path = resolve_url('log:article_delete', pk=self.article.pk)
 
-    def test_not_login(self):
+    def test_get_anonymous(self):
         response = self.client.get(self.path, follow=True)
         self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '日記を削除できるのは投稿者だけです。')
+        self.assertEqual(str(messages[0]), '日記を削除できるのは投稿者と管理者だけです。')
 
-    def test_another_user(self):
+    def test_get_another_user(self):
         another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='test')
         self.client.force_login(another_user)
         response = self.client.get(self.path, follow=True)
@@ -418,17 +424,25 @@ class TestArticleDeleteView(TestCase):
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
-        self.assertEqual(str(messages[0]), '日記を削除できるのは投稿者だけです。')
+        self.assertEqual(str(messages[0]), '日記を削除できるのは投稿者と管理者だけです。')
 
-    def test_login(self):
+    def test_get_article_user(self):
         self.client.force_login(self.user)
+        response = self.client.get(self.path)
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'log/article_delete.html')
+
+    def test_get_is_staff(self):
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='test',
+                                                is_staff=True)
+        self.client.force_login(another_user)
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log/article_delete.html')
 
     def test_post_success(self):
         self.client.force_login(self.user)
-        response = self.client.post(self.path, follow=True)
+        response = self.client.post(self.path, data={}, follow=True)
         self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
 
         messages = list(response.context['messages'])

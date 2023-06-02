@@ -91,8 +91,8 @@ class ArticleUpdateView(UpdateView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if not request.user == self.object.user:
-            messages.error(request, '日記を更新できるのは投稿者だけです。')
+        if not request.user == self.object.user and not request.user.is_staff:
+            messages.error(request, '日記を更新できるのは投稿者と管理者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
@@ -107,11 +107,6 @@ class ArticleUpdateView(UpdateView):
     def get_success_url(self):
         return reverse('log:article_list')
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['article'] = self.object
-        return context
-
 
 class ArticleDeleteView(DeleteView):
     model = Article
@@ -119,8 +114,8 @@ class ArticleDeleteView(DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if not request.user == self.object.user:
-            messages.error(request, '日記を削除できるのは投稿者だけです。')
+        if not request.user == self.object.user and not request.user.is_staff:
+            messages.error(request, '日記を削除できるのは投稿者と管理者だけです。')
             return redirect('log:article_list')
         return super().dispatch(request, *args, **kwargs)
 
