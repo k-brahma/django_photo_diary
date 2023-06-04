@@ -22,7 +22,8 @@ class TestArticleUpdateViewSample(TestCase):
         cls.list_path = resolve_url('log:article_list')
 
         # テストユーザを作る。この作業は全テストを通じて一度で良いので setUpTestData で行う
-        cls.user = User.objects.create_user(username='test', email='foo@bar.com', password='testpassword')
+        cls.user = User.objects.create_user(username='test', email='foo@bar.com',
+                                            password='testpassword')
 
         # テスト用のタグを作成
         for i in range(1, 5):
@@ -33,28 +34,33 @@ class TestArticleUpdateViewSample(TestCase):
         # テストの都度改めて article を作成する
         # 投稿編集テストがあるので、 setUpTestData で行うのは不適切
         # (更新された article のままだと他のテストに影響するため)
-        self.article = Article.objects.create(title='base_test_title', body='base_test_body',
-                                              user=self.user)
+        self.article = Article.objects.create(title='base_test_title',
+                                              body='base_test_body', user=self.user)
         self.article.tags.add(self.tag1, self.tag2)
 
         # aritcle の pk は生成される都度異なる場合があるので注意(データベース製品による)
         self.path = resolve_url('log:article_update', pk=self.article.pk)
 
     def result_redirect(self, response):
+        """ 権限を持たないユーザが GET/POST でアクセスしたときのリダイレクト処理 """
         redirect_path = self.list_path
-        self.assertRedirects(response, redirect_path, 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, redirect_path, 302, 200,
+                             fetch_redirect_response=True)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
         self.assertEqual(str(messages[0]), '日記を更新できるのは投稿者と管理者だけです。')
 
     def result_get_success(self, response):
+        """ 権限を持つユーザが GET でアクセスしたときの処理 """
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log/article_update.html')
         self.assertContains(response, self.article.title)
 
     def result_post_success(self, response):
-        self.assertRedirects(response, self.list_path, 302, 200, fetch_redirect_response=True)
+        """ 権限を持つユーザが POST で日記の更新を行ったときの処理 """
+        self.assertRedirects(response, self.list_path, 302, 200,
+                             fetch_redirect_response=True)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -79,7 +85,8 @@ class TestArticleUpdateViewSample(TestCase):
 
     def test_get_another_user(self):
         """ 投稿者本人でなくてスタッフでもない場合は一覧ページにリダイレクトされる """
-        another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='testpassword')
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com',
+                                                password='testpassword')
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
@@ -96,8 +103,8 @@ class TestArticleUpdateViewSample(TestCase):
 
     def test_get_is_staff(self):
         """ 投稿者本人でなくてもスタッフの場合は更新ページが表示される """
-        another_user = User.objects.create_user(is_staff=True, username='another', email='foo2@bar.com',
-                                                password='testpassword')
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com',
+                                                password='testpassword', is_staff=True)
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
@@ -106,7 +113,8 @@ class TestArticleUpdateViewSample(TestCase):
 
     def test_post_failure_another_user(self):
         """ 投稿者本人でなくてスタッフでもない場合は投稿に失敗し一覧ページにリダイレクトされる """
-        another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='testpassword')
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com',
+                                                password='testpassword')
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
@@ -141,8 +149,8 @@ class TestArticleUpdateViewSample(TestCase):
 
     def test_post_success_is_staff(self):
         """ 投稿者本人でなくてもスタッフの場合は投稿を更新できる """
-        another_user = User.objects.create_user(is_staff=True, username='another', email='foo2@bar.com',
-                                                password='testpassword')
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com',
+                                                password='testpassword', is_staff=True)
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
@@ -177,6 +185,7 @@ class TestArticleDeleteViewSample(TestCase):
         self.path = resolve_url('log:article_delete', pk=self.article.pk)
 
     def result_redirect(self, response):
+        """ 権限を持たないユーザが GET/POST でアクセスしたときのリダイレクト処理 """
         redirect_path = self.list_path
         self.assertRedirects(response, redirect_path, 302, 200, fetch_redirect_response=True)
 
@@ -185,11 +194,13 @@ class TestArticleDeleteViewSample(TestCase):
         self.assertEqual(str(messages[0]), '日記を削除できるのは投稿者と管理者だけです。')
 
     def result_get_success(self, response):
+        """ 権限を持つユーザが GET でアクセスしたときの処理 """
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log/article_delete.html')
         self.assertContains(response, self.article.title)
 
     def result_post_success(self, response):
+        """ 権限を持つユーザが POST で日記の削除を行ったときの処理 """
         self.assertRedirects(response, self.list_path, 302, 200, fetch_redirect_response=True)
 
         messages = list(response.context['messages'])
