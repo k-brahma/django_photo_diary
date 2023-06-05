@@ -44,8 +44,7 @@ class TestArticleUpdateViewSample(TestCase):
     def result_redirect(self, response):
         """ 権限を持たないユーザが GET/POST でアクセスしたときのリダイレクト処理 """
         redirect_path = self.list_path
-        self.assertRedirects(response, redirect_path, 302, 200,
-                             fetch_redirect_response=True)
+        self.assertRedirects(response, redirect_path)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -59,8 +58,7 @@ class TestArticleUpdateViewSample(TestCase):
 
     def result_post_success(self, response):
         """ 権限を持つユーザが POST で日記の更新を行ったときの処理 """
-        self.assertRedirects(response, self.list_path, 302, 200,
-                             fetch_redirect_response=True)
+        self.assertRedirects(response, self.list_path)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -178,16 +176,18 @@ class TestArticleDeleteViewSample(TestCase):
     @classmethod
     def setUpTestData(cls):
         cls.list_path = resolve_url('log:article_list')
-        cls.user = User.objects.create_user(username='test', email='foo@bar.com', password='testpassword')
+        cls.user = User.objects.create_user(username='test', email='foo@bar.com',
+                                            password='testpassword')
 
     def setUp(self):
-        self.article = Article.objects.create(title='base_test_title', body='base_test_body', user=self.user)
+        self.article = Article.objects.create(title='base_test_title',
+                                              body='base_test_body', user=self.user)
         self.path = resolve_url('log:article_delete', pk=self.article.pk)
 
     def result_redirect(self, response):
         """ 権限を持たないユーザが GET/POST でアクセスしたときのリダイレクト処理 """
         redirect_path = self.list_path
-        self.assertRedirects(response, redirect_path, 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, redirect_path)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -201,7 +201,7 @@ class TestArticleDeleteViewSample(TestCase):
 
     def result_post_success(self, response):
         """ 権限を持つユーザが POST で日記の削除を行ったときの処理 """
-        self.assertRedirects(response, self.list_path, 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, self.list_path)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -214,7 +214,8 @@ class TestArticleDeleteViewSample(TestCase):
 
     def test_get_another_user(self):
         """ 投稿者本人でなくてスタッフでもない場合は一覧ページにリダイレクトされる """
-        another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='testpassword')
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com',
+                                                password='testpassword')
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
@@ -231,8 +232,8 @@ class TestArticleDeleteViewSample(TestCase):
 
     def test_get_is_staff(self):
         """ 投稿者本人でなくてもスタッフの場合は削除ページが表示される """
-        another_user = User.objects.create_user(is_staff=True, username='another', email='foo2@bar.com',
-                                                password='testpassword')
+        another_user = User.objects.create_user(is_staff=True, username='another',
+                                                email='foo2@bar.com', password='testpassword')
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
@@ -241,12 +242,12 @@ class TestArticleDeleteViewSample(TestCase):
 
     def test_post_failure_another_user(self):
         """ 投稿者本人でなくてスタッフでもない場合は投稿に失敗し一覧ページにリダイレクトされる """
-        another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='testpassword')
+        another_user = User.objects.create_user(username='another', email='foo2@bar.com',
+                                                password='testpassword')
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 
-        data = {'title': 'test_title_fail', 'body': 'test_body_fail'}  # postメソッドで送信するデータを生成
-        response = self.client.post(self.path, data=data, follow=True)
+        response = self.client.post(self.path, data={}, follow=True)
         self.result_redirect(response)
 
         # オブジェクトが削除されていないことを確認
@@ -267,8 +268,8 @@ class TestArticleDeleteViewSample(TestCase):
 
     def test_post_success_is_staff(self):
         """ 投稿者本人でなくてもスタッフの場合は投稿を削除できる """
-        another_user = User.objects.create_user(is_staff=True, username='another', email='foo2@bar.com',
-                                                password='testpassword')
+        another_user = User.objects.create_user(is_staff=True, username='another',
+                                                email='foo2@bar.com', password='testpassword')
         result = self.client.login(email=another_user.email, password='testpassword')
         self.assertTrue(result)  # ログイン成功しているか確認
 

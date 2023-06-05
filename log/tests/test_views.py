@@ -131,7 +131,7 @@ class TestArticleDetailView(TestCase):
 
         self.client.force_login(self.user)
         response = self.client.post(self.path, data={'body': 'test_comment'}, follow=True)
-        self.assertRedirects(response, self.path, 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, self.path)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -149,7 +149,7 @@ class TestArticleDetailView(TestCase):
 
         self.client.force_login(self.user)
         response = self.client.post(self.path, data={'body': ''}, follow=True)
-        self.assertRedirects(response, self.path, 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, self.path)
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -164,7 +164,7 @@ class TestArticleDetailView(TestCase):
         self.assertTrue(Article.objects.filter(pk=self.pk).exists())
 
         response = self.client.post(self.path, data={'body': 'test_comment'}, follow=True)
-        self.assertRedirects(response, resolve_url('account_login'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('account_login'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -195,7 +195,7 @@ class TestArticleCreateView(TestCase):
 
     def test_get_anonymous(self):
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -210,7 +210,7 @@ class TestArticleCreateView(TestCase):
     def test_post_success_title_body_only(self):
         self.client.force_login(self.user)
         response = self.client.post(self.path, data={'title': 'test_title', 'body': 'test_body'}, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -230,7 +230,7 @@ class TestArticleCreateView(TestCase):
 
         response = self.client.post(self.path, data={'title': 'test_title', 'body': 'test_body', 'photo': photo,
                                                      'tags': [self.tag1.id, self.tag2.id, ]}, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -298,7 +298,7 @@ class TestArticleUpdateView(TestCase):
 
     def test_get_anonymous(self):
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -308,7 +308,7 @@ class TestArticleUpdateView(TestCase):
         another_user = User.objects.create_user(username='another', email='foo2@bar.com')
         self.client.force_login(another_user)
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -331,7 +331,7 @@ class TestArticleUpdateView(TestCase):
     def test_post_success_title_body_only(self):
         self.client.force_login(self.user)
         response = self.client.post(self.path, data={'title': 'test_title', 'body': 'test_body'}, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -350,7 +350,7 @@ class TestArticleUpdateView(TestCase):
             photo = SimpleUploadedFile('test_img.png', f.read(), content_type='image/png')
         response = self.client.post(self.path, data={'title': 'test_title', 'body': 'test_body', 'photo': photo,
                                                      'tags': [self.tag1.id, self.tag2.id, ]}, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -410,7 +410,7 @@ class TestArticleDeleteView(TestCase):
 
     def test_get_anonymous(self):
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -420,7 +420,7 @@ class TestArticleDeleteView(TestCase):
         another_user = User.objects.create_user(username='another', email='foo2@bar.com', password='test')
         self.client.force_login(another_user)
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -443,7 +443,7 @@ class TestArticleDeleteView(TestCase):
     def test_post_success(self):
         self.client.force_login(self.user)
         response = self.client.post(self.path, data={}, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -474,7 +474,7 @@ class TestTagCreateView(TestCase):
 
     def test_anonymous(self):
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -484,7 +484,7 @@ class TestTagCreateView(TestCase):
         user = User.objects.create_user(is_staff=False, username='test', email='foo@bar.com')
         self.client.force_login(user)
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -501,7 +501,7 @@ class TestTagCreateView(TestCase):
         user = User.objects.create_user(is_staff=True, username='test', email='foo@bar.com')
         self.client.force_login(user)
         response = self.client.post(self.path, data={'name': 'test_tag', 'slug': 'test_slug', }, follow=True)
-        self.assertRedirects(response, resolve_url('log:tag_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:tag_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -522,7 +522,7 @@ class TestTagUpdateView(TestCase):
 
     def test_anonymous(self):
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -532,7 +532,7 @@ class TestTagUpdateView(TestCase):
         user = User.objects.create_user(is_staff=False, username='test', email='foo@bar.com')
         self.client.force_login(user)
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -549,7 +549,7 @@ class TestTagUpdateView(TestCase):
         user = User.objects.create_user(is_staff=True, username='test', email='foo@bar.com')
         self.client.force_login(user)
         response = self.client.post(self.path, data={'name': 'test_tag', 'slug': 'test_slug', }, follow=True)
-        self.assertRedirects(response, resolve_url('log:tag_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:tag_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -570,7 +570,7 @@ class TestTagDeleteView(TestCase):
 
     def test_anonymous(self):
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -580,7 +580,7 @@ class TestTagDeleteView(TestCase):
         user = User.objects.create_user(is_staff=False, username='test', email='foo@bar.com')
         self.client.force_login(user)
         response = self.client.get(self.path, follow=True)
-        self.assertRedirects(response, resolve_url('log:article_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:article_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
@@ -597,7 +597,7 @@ class TestTagDeleteView(TestCase):
         user = User.objects.create_user(is_staff=True, username='test', email='foo@bar.com')
         self.client.force_login(user)
         response = self.client.post(self.path, data={}, follow=True)
-        self.assertRedirects(response, resolve_url('log:tag_list'), 302, 200, fetch_redirect_response=True)
+        self.assertRedirects(response, resolve_url('log:tag_list'))
 
         messages = list(response.context['messages'])
         self.assertEqual(len(messages), 1)
