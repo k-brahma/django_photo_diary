@@ -14,7 +14,7 @@ class TestArticleUpdateViewSample(TestCase):
     """
     ArticleUpdateView のテスト
 
-    ページの表示/投稿の更新ができるのが投稿者本人または is_staff ユーザのみということを確認する
+    ページの表示/日記の更新ができるのが投稿者本人または is_staff ユーザのみということを確認する
     """
 
     @classmethod
@@ -42,7 +42,7 @@ class TestArticleUpdateViewSample(TestCase):
         self.path = resolve_url('log:article_update', pk=self.article.pk)
 
     def result_redirect(self, response):
-        """ 権限を持たないユーザが GET/POST でアクセスしたときのリダイレクト処理 """
+        """ 権限を持たないユーザが GET/POST でアクセスしたときの処理の検証用メソッド """
         redirect_path = self.list_path
         self.assertRedirects(response, redirect_path)
 
@@ -51,13 +51,13 @@ class TestArticleUpdateViewSample(TestCase):
         self.assertEqual(str(messages[0]), '日記を更新できるのは投稿者と管理者だけです。')
 
     def result_get_success(self, response):
-        """ 権限を持つユーザが GET でアクセスしたときの処理 """
+        """ 権限を持つユーザが GET でアクセスしたときの処理の検証用メソッド """
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log/article_update.html')
         self.assertContains(response, self.article.title)
 
     def result_post_success(self, response):
-        """ 権限を持つユーザが POST で日記の更新を行ったときの処理 """
+        """ 権限を持つユーザが POST で日記の更新を行ったときの処理の検証用メソッド """
         self.assertRedirects(response, self.list_path)
 
         messages = list(response.context['messages'])
@@ -65,7 +65,7 @@ class TestArticleUpdateViewSample(TestCase):
         self.assertEqual(str(messages[0]), '日記を更新しました。')
 
     def check_article(self, title, body, tags):
-        """ post 後の article オブジェクトの状態チェック """
+        """ POST 後の article オブジェクトの状態チェック用メソッド """
         articles = Article.objects.all()
         self.assertEqual(len(articles), 1)
         self.assertEqual(articles[0].title, title)
@@ -170,7 +170,7 @@ class TestArticleDeleteViewSample(TestCase):
     """
     ArticleDeleteView のテスト
 
-    ページの表示/投稿の削除ができるのが投稿者本人または is_staff ユーザのみということを確認する
+    ページの表示/日記の削除ができるのが投稿者本人または is_staff ユーザのみということを確認する
     """
 
     @classmethod
@@ -185,7 +185,7 @@ class TestArticleDeleteViewSample(TestCase):
         self.path = resolve_url('log:article_delete', pk=self.article.pk)
 
     def result_redirect(self, response):
-        """ 権限を持たないユーザが GET/POST でアクセスしたときのリダイレクト処理 """
+        """ 権限を持たないユーザが GET/POST でアクセスしたときの処理の検証用メソッド """
         redirect_path = self.list_path
         self.assertRedirects(response, redirect_path)
 
@@ -194,13 +194,13 @@ class TestArticleDeleteViewSample(TestCase):
         self.assertEqual(str(messages[0]), '日記を削除できるのは投稿者と管理者だけです。')
 
     def result_get_success(self, response):
-        """ 権限を持つユーザが GET でアクセスしたときの処理 """
+        """ 権限を持つユーザが GET でアクセスしたときの処理の検証用メソッド """
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'log/article_delete.html')
         self.assertContains(response, self.article.title)
 
     def result_post_success(self, response):
-        """ 権限を持つユーザが POST で日記の削除を行ったときの処理 """
+        """ 権限を持つユーザが POST で日記の削除を行ったときの処理の検証用メソッド """
         self.assertRedirects(response, self.list_path)
 
         messages = list(response.context['messages'])

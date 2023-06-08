@@ -34,7 +34,7 @@ class TestRedirectClient(TestCase):
     follow=True/False での挙動の違いを確認する
     """
 
-    def prepare(self):
+    def setUp(self):
         """ 3つのテストメソッドに共通の準備 """
         user = get_user_model().objects.create_user(
             username='test', email='foo@bar.com', password='testpassword')
@@ -46,8 +46,6 @@ class TestRedirectClient(TestCase):
 
     def test_follow_false(self):
         """ follow=False のとき、リダイレクト先のページを取得しない """
-        self.prepare()
-
         response = self.client.get(self.path, follow=False)
 
         # リダイレクトコードを受け取るところまでしか処理を進めないので、ステータスコードは 302
@@ -62,8 +60,6 @@ class TestRedirectClient(TestCase):
 
     def test_follow_true(self):
         """ follow=True  のとき、リダイレクト先のページを取得する """
-        self.prepare()
-
         response = self.client.get(self.path, follow=True)
 
         # リダイレクト先ページを取得するので、ステータスコードは 200
@@ -78,8 +74,6 @@ class TestRedirectClient(TestCase):
 
     def test_default(self):
         """ follow のデフォルト値は False """
-        self.prepare()
-
         response = self.client.get(self.path, follow=False)
 
         self.assertEqual(response.status_code, 302)
@@ -96,7 +90,7 @@ class TestRedirectAssertRedirect(TestCase):
     fetch_redirect_response=True/False での挙動の違いを確認する
     """
 
-    def prepare(self):
+    def setUp(self):
         """ 3つのテストメソッドに共通の準備 """
         user = get_user_model().objects.create_user(
             username='test', email='foo@bar.com', password='testpassword')
@@ -109,18 +103,16 @@ class TestRedirectAssertRedirect(TestCase):
     def test_fetch_redirect_response_false(self):
         """ fetch_redirect=False のとき、assertRedirects メソッドは、
             リダイレクト先の検証を行わない """
-        self.prepare()
         response = self.client.get(self.path)
 
         self.assertRedirects(
-            response, self.redirect_path, status_code=302,
-            target_status_code=500,  # リダイレクト先の検証を行わないので、どんな値でもOK
+            response, self.redirect_path,
+            target_status_code=500,  # リダイレクト先の検証を行わないのでこの値は無視される
             fetch_redirect_response=False)
 
     def test_fetch_redirect_response_true(self):
         """ fetch_redirect=True のとき、assertRedirects メソッドは、
             内部でリダイレクト先へのリクエストを発行し、ステータスコードの検証を行う """
-        self.prepare()
         response = self.client.get(self.path)
 
         # target_status_code は 正しい値なのでOK
@@ -128,16 +120,28 @@ class TestRedirectAssertRedirect(TestCase):
                              fetch_redirect_response=True)
 
         # target_status_code は 正しい値ではないのでこれはNG
-        # self.assertRedirects(response, self.redirect_path, target_status_code=500,
+        # self.assertRedirects(response, self.redirect_path,
+        #                      target_status_code=500,  # リダイレクト先の検証を行うのでこれはNG
         #                      fetch_redirect_response=True)
 
     def test_fetch_redirect_response_default(self):
         """ fetch_redirect のデフォルト値は True """
-        self.prepare()
         response = self.client.get(self.path)
 
         # target_status_code は 正しい値なのでOK
         self.assertRedirects(response, self.redirect_path, target_status_code=200, )
+
+        # target_status_codeの初期値は 200 なので以下でもOK
+        self.assertRedirects(response, self.redirect_path)
+
+        # 以下は、そのほかの初期値もあえて指定したもの
+        self.assertRedirects(response, self.redirect_path,
+                             status_code=302,
+                             target_status_code=200)
+        self.assertRedirects(response, self.redirect_path,
+                             status_code=302,
+                             target_status_code=200,
+                             fetch_redirect_response=True)
 
         # target_status_code は 正しい値ではないのでこれはNG
         # self.assertRedirects(response, self.redirect_path, target_status_code=500, )
@@ -146,7 +150,7 @@ class TestRedirectAssertRedirect(TestCase):
 class TestRedirectVariousCases(TestCase):
     """ 種々のニーズに対応したリダイレクトのテスト方法まとめ """
 
-    def prepare(self):
+    def setUp(self):
         """ 3つのテストメソッドに共通の準備 """
         user = get_user_model().objects.create_user(
             username='test', email='foo@bar.com', password='testpassword')
@@ -158,19 +162,16 @@ class TestRedirectVariousCases(TestCase):
 
     def test_assert_status_code_only(self):
         """ リダイレクト元でのスタータスコードを検査したいだけのとき"""
-        self.prepare()
         response = self.client.get(self.path)
         self.assertEqual(response.status_code, 302)
 
     def test_assert_redirect_status_code(self):
         """ リダイレクト先のステータスコードを検査したいだけのとき """
-        self.prepare()
         response = self.client.get(self.path, follow=True)
         self.assertEqual(response.status_code, 200)
 
     def test_assert_redirect_page_content(self):
         """ リダイレクト先のコンテンツを検査したいいとき """
-        self.prepare()
         response = self.client.get(self.path, follow=True)
 
         html = response.content.decode('utf-8')
@@ -184,10 +185,9 @@ class TestRedirectVariousCases(TestCase):
 
     def test_assert_redirect(self):
         """ リダイレクト元とリダイレクト先のスタータスコードの両方を検査したいとき """
-        self.prepare()
         response = self.client.get(self.path, follow=True)
         self.assertRedirects(response, self.redirect_path,
                              status_code=302, target_status_code=200)
 
-        # status_code=302, target_status_code=200 はともに初期値なので、省略可能
+        # status_code=302, target_status_code=200 はともに初期値なので省略可能
         self.assertRedirects(response, self.redirect_path)

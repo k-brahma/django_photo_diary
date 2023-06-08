@@ -273,7 +273,7 @@ class TestArticleUpdateView(TestCase):
     """
     ArticleUpdateView のテスト
 
-    ページの表示/投稿の更新ができるのが投稿者本人または is_staff ユーザのみということを確認する
+    ページの表示/日記の更新ができるのが投稿者本人または is_staff ユーザのみということを確認する
     """
 
     @classmethod
@@ -390,7 +390,7 @@ class TestArticleDeleteView(TestCase):
     """
     ArticleDeleteView のテスト
 
-    ページの表示/投稿の削除ができるのが投稿者本人または is_staff ユーザのみということを確認する
+    ページの表示/日記の削除ができるのが投稿者本人または is_staff ユーザのみということを確認する
     """
 
     @classmethod
