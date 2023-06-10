@@ -1,3 +1,5 @@
+import logging
+
 from django.contrib import messages
 from django.shortcuts import get_object_or_404, redirect, resolve_url
 from django.urls import reverse
@@ -5,6 +7,8 @@ from django.views.generic import ListView, DetailView, CreateView, UpdateView, D
 
 from log.forms import ArticleForm, CommentForm
 from log.models import Article, Tag
+
+logger = logging.getLogger(__name__)
 
 
 class ArticleListView(ListView):
@@ -74,10 +78,14 @@ class ArticleCreateView(CreateView):
     def form_valid(self, form):
         form.instance.user = self.request.user
         messages.success(self.request, '日記を投稿しました。')
-        return super().form_valid(form)
+        logger.info('before: article create: user=%s title=%s', self.request.user.email, form.instance.title)
+        result = super().form_valid(form)
+        logger.info('after  :article create: user=%s id=%s', self.request.user.email, self.object.id)
+        return result
 
     def form_invalid(self, form):
         messages.error(self.request, '日記を投稿できませんでした。')
+        logger.warning('article create failed: %s', self.request.user.email, form.instance.title)
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -98,10 +106,12 @@ class ArticleUpdateView(UpdateView):
 
     def form_valid(self, form):
         messages.success(self.request, '日記を更新しました。')
+        logger.info('before: article update: user=%s id=%s', self.request.user.email, self.object.id)
         return super().form_valid(form)
 
     def form_invalid(self, form):
         messages.error(self.request, '日記を編集できませんでした。')
+        logger.warning('article update failed: %s', self.request.user.email, self.object.id)
         return super().form_invalid(form)
 
     def get_success_url(self):
@@ -121,6 +131,7 @@ class ArticleDeleteView(DeleteView):
 
     def form_valid(self, form):
         messages.success(self.request, '日記を削除しました。')
+        logger.info('before: article delete: user=%s id=%s', self.request.user.email, self.object.id)
         return super().form_valid(form)
 
     def get_success_url(self):

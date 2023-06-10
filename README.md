@@ -14,13 +14,13 @@
 
 ローカル環境の場合は以下
 
-```bash
+```shell
 $ pip install -r requirements/dev.txt
 ```
 
 本番環境の場合は以下
 
-```bash
+```shell
 $ pip install -r requirements/prod.txt
 ```
 
@@ -38,7 +38,7 @@ config/local.py または config/production.py をコピーして、 config/sett
 SECRET_KEY を生成して .env に記載します。  
 SECRET_KEY は、以下のコマンドで生成できます。
 
-```bash
+```shell
 python -c 'from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())'
 ```
 
@@ -46,7 +46,7 @@ python -c 'from django.core.management.utils import get_random_secret_key; print
 
 `python manage.py check` でエラーがでていないことを確認します。
 
-```bash
+```shell
 $ python manage.py check
 ```
 
@@ -54,7 +54,7 @@ $ python manage.py check
 
 `python manage.py migrate` でデータベースを作成します。
 
-```bash
+```shell
 $ python manage.py migrate
 ```
 
@@ -62,7 +62,7 @@ $ python manage.py migrate
 
 `python manage.py createsuperuser` で管理者ユーザーを作成します。
 
-```bash
+```shell
 $ python manage.py createsuperuser
 ```
 
@@ -70,7 +70,7 @@ $ python manage.py createsuperuser
 
 本番環境での利用時は、 `python manage.py collectstatic` で静的ファイルを配信します。
 
-```bash
+```shell
 $ python manage.py collectstatic
 ```
 
@@ -78,7 +78,7 @@ $ python manage.py collectstatic
 
 ローカル環境での動作確認には、 `python manage.py runserver` でサーバーを起動します。
 
-```bash
+```shell
 $ python manage.py runserver
 ```
 
@@ -350,7 +350,7 @@ Django の UnitTest クラスは、 Python 標準の UnitTest クラスを継承
 
 テストは、以下のコマンドで実行できます。
 
-```bash
+```shell
 $ python manage.py test
 ```
 
