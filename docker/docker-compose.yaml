@@ -10,7 +10,7 @@ services:
             python manage.py runserver 0.0.0.0:8000 --settings=config.docker"
     volumes:
       - ..:/app
-      - log_data:/var/log/mysite
+      - ./volumes/web/log:/var/log/mysite
       - ./volumes/nginx/static:/app/staticfiles
       - media_volume:/app/mediafiles
     ports:
@@ -48,6 +48,24 @@ services:
       timeout: 5s
       retries: 5
 
+  certbot:
+    image: certbot/certbot
+    profiles:
+      - certbot
+    volumes:
+      - ./volumes/certbot/conf:/etc/letsencrypt
+      - ./volumes/certbot/www:/var/www/html
+      - ./volumes/certbot/logs:/var/log/letsencrypt
+      - ./volumes/certbot/conf/live:/etc/letsencrypt/live
+      - ./certbot/update-cert.template.txt:/update-cert.template.txt
+      - ./certbot/docker-entrypoint.sh:/docker-entrypoint.sh
+    environment:
+      - CERTBOT_EMAIL=${CERTBOT_EMAIL}
+      - CERTBOT_DOMAIN=${CERTBOT_DOMAIN}
+      - CERTBOT_OPTIONS=${CERTBOT_OPTIONS:-}
+    entrypoint: [ "/docker-entrypoint.sh" ]
+    command: ["tail", "-f", "/dev/null"]
+
   nginx:
     image: nginx:latest
     volumes:
@@ -70,6 +88,11 @@ services:
       NGINX_SSL_CERT_FILENAME: ${NGINX_SSL_CERT_FILENAME:-dify.crt}
       NGINX_SSL_CERT_KEY_FILENAME: ${NGINX_SSL_CERT_KEY_FILENAME:-dify.key}
       NGINX_SSL_PROTOCOLS: ${NGINX_SSL_PROTOCOLS:-TLSv1.1 TLSv1.2 TLSv1.3}
+      NGINX_WORKER_PROCESSES: ${NGINX_WORKER_PROCESSES:-auto}
+      NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-15M}
+      NGINX_KEEPALIVE_TIMEOUT: ${NGINX_KEEPALIVE_TIMEOUT:-65}
+      NGINX_PROXY_READ_TIMEOUT: ${NGINX_PROXY_READ_TIMEOUT:-3600s}
+      NGINX_PROXY_SEND_TIMEOUT: ${NGINX_PROXY_SEND_TIMEOUT:-3600s}
       NGINX_ENABLE_CERTBOT_CHALLENGE: ${NGINX_ENABLE_CERTBOT_CHALLENGE:-false}
       CERTBOT_DOMAIN: ${CERTBOT_DOMAIN:-}
     ports:
@@ -82,5 +105,3 @@ volumes:
   media_volume:
   postgres_data:
     name: docker_postgres_data
-  log_data:
-    name: docker_log_data
