@@ -12,7 +12,7 @@ class TestSignUpPage(TestCase):
 
         self.assertTemplateUsed(response, 'account/signup_closed.html')
 
-        self.assertContains(response, '<title>ユーザー登録停止中</title>')
-        self.assertContains(response, '<p>申し訳ありません、現在ユーザー登録を停止しています。</p>')
+        self.assertInHTML('<title>ユーザー登録停止中</title>', response.content.decode())
+        self.assertInHTML('<p>申し訳ありません、現在ユーザー登録を停止しています。</p>', response.content.decode())
 
         self.assertNotContains(response, '<button type="submit">ユーザー登録 &raquo;</button>')
