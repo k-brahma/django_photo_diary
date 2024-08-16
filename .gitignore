@@ -25,3 +25,6 @@ media_test_dir/
 #coverage
 htmlcov/
 .coverage
+
+# docker
+/volumes/*

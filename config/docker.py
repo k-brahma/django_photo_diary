@@ -83,6 +83,7 @@ TIME_ZONE = 'Asia/Tokyo'
 USE_I18N = True
 USE_TZ = True
 
+STATICFILES_DIRS = [BASE_DIR / 'static', ]
 STATIC_URL = '/static/'
 STATIC_ROOT = '/app/staticfiles'
 MEDIA_URL = '/media/'
