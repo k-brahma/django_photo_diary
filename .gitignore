@@ -28,4 +28,5 @@ htmlcov/
 
 # docker
 docker/volumes/*
+docker/nginx/conf.d/default.conf
 
