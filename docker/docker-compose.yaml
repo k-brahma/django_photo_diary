@@ -1,0 +1,59 @@
+version: '3'
+
+services:
+  web:
+    build: ../
+    command: >
+      sh -c "python manage.py wait_for_db &&
+             python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000 --settings=config.docker"
+    volumes:
+      - ..:/app
+      - log_data:/var/log/mysite
+      - static_data:/app/staticfiles
+      - media_data:/app/mediafiles
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=${DEBUG}
+      - SECRET_KEY=${SECRET_KEY}
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS}
+      - DB_NAME=${DB_NAME}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_HOST=${DB_HOST}
+      - DB_PORT=${DB_PORT}
+      - EMAIL_HOST=${EMAIL_HOST}
+      - EMAIL_PORT=${EMAIL_PORT}
+      - EMAIL_HOST_USER=${EMAIL_HOST_USER}
+      - EMAIL_HOST_PASSWORD=${EMAIL_HOST_PASSWORD}
+      - DEFAULT_FROM_EMAIL=${DEFAULT_FROM_EMAIL}
+    env_file:
+    - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=${DB_NAME}
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U photo_diary_user -d photo_diary_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  static_data:
+    name: docker_static_data
+  media_data:
+    name: docker_media_data
+  postgres_data:
+    name: docker_postgres_data
+  log_data:
+    name: docker_log_data
