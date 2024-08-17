@@ -66,11 +66,3 @@ Then, reload the nginx container if necessary.
 ```shell
 sudo docker-compose exec nginx nginx -s reload
 ```
-
-## For legacy servers
-
-To use cert files dir `nginx/ssl` as before, simply launch containers WITHOUT `--profile certbot` option.
-
-```shell
-sudo docker-compose up -d
-```
